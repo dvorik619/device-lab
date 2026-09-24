@@ -1,0 +1,2541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DEVICE LAB — Device Performance Testing</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#050505;
+    color:#fff;
+    font-family:Inter,Arial,Helvetica,sans-serif;
+    overflow-x:hidden;
+}
+
+body:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.025;
+    background-image:
+        radial-gradient(#fff 1px,transparent 1px);
+    background-size:4px 4px;
+    z-index:9999;
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+a{
+    color:inherit;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:74px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 5%;
+
+    background:rgba(5,5,5,.78);
+    backdrop-filter:blur(20px);
+
+    border-bottom:1px solid #202020;
+
+    z-index:1000;
+}
+
+.logo{
+    font-size:21px;
+    font-weight:950;
+    letter-spacing:4px;
+}
+
+.logo span{
+    color:#a6ff00;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.header-status{
+    display:flex;
+    align-items:center;
+    gap:7px;
+
+    color:#777;
+    font-size:10px;
+    letter-spacing:1.5px;
+    font-weight:800;
+}
+
+.status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#a6ff00;
+    box-shadow:0 0 10px #a6ff00;
+}
+
+.discord-link{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:10px 15px;
+
+    border:1px solid #292929;
+    border-radius:5px;
+
+    text-decoration:none;
+
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:1px;
+
+    transition:.25s;
+}
+
+.discord-link:hover{
+    background:#a6ff00;
+    color:#050505;
+    border-color:#a6ff00;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    min-height:100vh;
+    width:100%;
+
+    display:flex;
+    align-items:center;
+
+    padding:140px 7% 90px;
+
+    position:relative;
+
+    background:
+        radial-gradient(
+            circle at 80% 35%,
+            rgba(166,255,0,.12),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 20% 80%,
+            rgba(166,255,0,.045),
+            transparent 30%
+        );
+}
+
+.hero-grid{
+    position:absolute;
+    inset:0;
+
+    opacity:.15;
+
+    background-image:
+        linear-gradient(#222 1px,transparent 1px),
+        linear-gradient(90deg,#222 1px,transparent 1px);
+
+    background-size:70px 70px;
+
+    mask-image:
+        linear-gradient(to bottom,#000,transparent);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+
+    width:100%;
+}
+
+.label{
+    color:#a6ff00;
+
+    font-size:10px;
+    font-weight:950;
+
+    letter-spacing:4px;
+
+    margin-bottom:28px;
+}
+
+.hero h1{
+    font-size:clamp(65px,12vw,150px);
+
+    line-height:.82;
+
+    letter-spacing:-8px;
+
+    margin-bottom:35px;
+}
+
+.hero h1 span{
+    color:transparent;
+    -webkit-text-stroke:1px #555;
+}
+
+.hero-description{
+    max-width:650px;
+
+    color:#888;
+
+    font-size:17px;
+    line-height:1.7;
+
+    margin-bottom:35px;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:15px 24px;
+
+    border-radius:5px;
+
+    text-decoration:none;
+
+    border:1px solid transparent;
+
+    font-size:11px;
+    font-weight:950;
+    letter-spacing:1px;
+
+    transition:.25s;
+}
+
+.primary{
+    background:#a6ff00;
+    color:#050505;
+}
+
+.secondary{
+    background:#111;
+    border-color:#303030;
+}
+
+.button:hover{
+    transform:translateY(-3px);
+}
+
+.hero-stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+
+    max-width:850px;
+
+    margin-top:65px;
+
+    border:1px solid #222;
+}
+
+.hero-stat{
+    padding:22px;
+
+    border-right:1px solid #222;
+}
+
+.hero-stat:last-child{
+    border-right:none;
+}
+
+.hero-stat strong{
+    display:block;
+
+    font-size:25px;
+    margin-bottom:5px;
+}
+
+.hero-stat small{
+    color:#666;
+
+    font-size:9px;
+    font-weight:900;
+
+    letter-spacing:2px;
+}
+
+/* =========================
+   GLOBAL SECTION
+========================= */
+
+section{
+    width:100%;
+    max-width:none;
+
+    padding:110px 7%;
+}
+
+.section-label{
+    color:#a6ff00;
+
+    font-size:10px;
+    font-weight:950;
+
+    letter-spacing:3px;
+}
+
+.section-title{
+    font-size:clamp(42px,6vw,76px);
+
+    line-height:.9;
+
+    letter-spacing:-5px;
+
+    margin:15px 0 55px;
+}
+
+/* =========================
+   REGISTRATION GATE
+========================= */
+
+.registration-section{
+    min-height:100vh;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #131b0b,
+            #050505 55%
+        );
+}
+
+.register{
+    width:100%;
+    max-width:700px;
+
+    padding:50px;
+
+    background:
+        linear-gradient(145deg,#121212,#090909);
+
+    border:1px solid #292929;
+    border-radius:12px;
+
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.5);
+}
+
+.register h2{
+    font-size:42px;
+    letter-spacing:-2px;
+    margin:12px 0;
+}
+
+.register-description{
+    color:#777;
+    line-height:1.6;
+    margin-bottom:30px;
+}
+
+.input{
+    width:100%;
+
+    padding:16px;
+
+    margin-bottom:12px;
+
+    background:#060606;
+
+    border:1px solid #292929;
+    border-radius:5px;
+
+    color:#fff;
+
+    outline:none;
+}
+
+.input:focus{
+    border-color:#a6ff00;
+}
+
+.start{
+    width:100%;
+
+    padding:17px;
+
+    border:none;
+    border-radius:5px;
+
+    background:#a6ff00;
+    color:#050505;
+
+    font-size:11px;
+    font-weight:950;
+    letter-spacing:1px;
+
+    transition:.25s;
+}
+
+.start:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 30px rgba(166,255,0,.15);
+}
+
+.privacy-note{
+    color:#555;
+
+    font-size:10px;
+
+    line-height:1.5;
+
+    margin-top:18px;
+}
+
+/* =========================
+   LOCKED TEST AREA
+========================= */
+
+#lab{
+    display:none;
+}
+
+.dashboard{
+    display:grid;
+
+    grid-template-columns:1.3fr .7fr;
+
+    gap:15px;
+
+    margin-bottom:25px;
+}
+
+.dashboard-card{
+    padding:30px;
+
+    background:#0d0d0d;
+
+    border:1px solid #242424;
+    border-radius:8px;
+}
+
+.dashboard-card h3{
+    font-size:13px;
+    color:#777;
+    letter-spacing:2px;
+    margin-bottom:20px;
+}
+
+.user-name{
+    font-size:35px;
+    font-weight:950;
+}
+
+.user-meta{
+    color:#666;
+    margin-top:8px;
+    font-size:12px;
+}
+
+.device-score{
+    text-align:right;
+}
+
+.device-score strong{
+    display:block;
+
+    color:#a6ff00;
+
+    font-size:55px;
+    line-height:1;
+}
+
+.device-score span{
+    color:#666;
+    font-size:10px;
+    letter-spacing:2px;
+}
+
+/* =========================
+   TEST GRID
+========================= */
+
+.tests{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:15px;
+}
+
+.test-card{
+    min-height:315px;
+
+    padding:30px;
+
+    background:
+        linear-gradient(145deg,#151515,#090909);
+
+    border:1px solid #242424;
+    border-radius:8px;
+
+    position:relative;
+
+    transition:.3s;
+}
+
+.test-card:hover{
+    transform:translateY(-5px);
+
+    border-color:#414141;
+}
+
+.test-number{
+    color:#555;
+
+    font-size:10px;
+    font-weight:950;
+    letter-spacing:2px;
+}
+
+.test-icon{
+    position:absolute;
+
+    top:27px;
+    right:28px;
+
+    color:#333;
+
+    font-size:22px;
+}
+
+.test-card h3{
+    font-size:24px;
+
+    margin-top:55px;
+    margin-bottom:12px;
+}
+
+.test-card p{
+    min-height:48px;
+
+    color:#777;
+
+    font-size:13px;
+    line-height:1.6;
+
+    margin-bottom:22px;
+}
+
+.test-result{
+    min-height:23px;
+
+    color:#a6ff00;
+
+    font-size:13px;
+    font-weight:900;
+
+    margin-bottom:17px;
+}
+
+.test-button{
+    padding:11px 17px;
+
+    border:1px solid #333;
+    border-radius:4px;
+
+    background:#101010;
+    color:#fff;
+
+    font-size:10px;
+    font-weight:950;
+    letter-spacing:1px;
+
+    transition:.2s;
+}
+
+.test-button:hover{
+    background:#a6ff00;
+    color:#050505;
+    border-color:#a6ff00;
+}
+
+/* =========================
+   AUDIO VISUALIZER
+========================= */
+
+.audio-bars{
+    display:flex;
+
+    align-items:end;
+    gap:3px;
+
+    height:35px;
+
+    margin-bottom:18px;
+}
+
+.audio-bar{
+    width:5px;
+
+    height:8px;
+
+    background:#a6ff00;
+
+    opacity:.6;
+
+    transition:.08s;
+}
+
+/* =========================
+   DEVICE INFORMATION
+========================= */
+
+.info-panel{
+    margin-top:25px;
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:1px;
+
+    background:#242424;
+
+    border:1px solid #242424;
+}
+
+.info-item{
+    padding:20px;
+
+    background:#0d0d0d;
+}
+
+.info-item small{
+    display:block;
+
+    color:#555;
+
+    font-size:9px;
+
+    letter-spacing:2px;
+
+    margin-bottom:7px;
+}
+
+.info-item strong{
+    font-size:13px;
+
+    word-break:break-word;
+}
+
+/* =========================
+   BENCHMARK
+========================= */
+
+.benchmark{
+    margin-top:25px;
+
+    padding:40px;
+
+    background:
+        radial-gradient(
+            circle at 80% 50%,
+            #18220c,
+            #0b0b0b 50%
+        );
+
+    border:1px solid #252525;
+    border-radius:10px;
+}
+
+.benchmark h3{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.benchmark p{
+    color:#777;
+    margin-bottom:25px;
+}
+
+.progress{
+    width:100%;
+    height:5px;
+
+    background:#222;
+
+    overflow:hidden;
+
+    margin:20px 0;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+
+    background:#a6ff00;
+
+    transition:.15s;
+}
+
+/* =========================
+   DISCORD
+========================= */
+
+.discord-section{
+    text-align:center;
+}
+
+.discord-box{
+    padding:80px 30px;
+
+    border:1px solid #252525;
+    border-radius:15px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #1c2410,
+            #080808 65%
+        );
+}
+
+.discord-box h2{
+    font-size:clamp(40px,6vw,75px);
+
+    letter-spacing:-5px;
+
+    margin:15px 0;
+}
+
+.discord-box p{
+    color:#777;
+    margin-bottom:30px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    border-top:1px solid #222;
+
+    padding:30px 7%;
+
+    display:flex;
+    justify-content:space-between;
+
+    color:#555;
+
+    font-size:10px;
+    letter-spacing:1px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:900px){
+
+    .header-status{
+        display:none;
+    }
+
+    .hero-stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .hero-stat:nth-child(2){
+        border-right:none;
+    }
+
+    .hero-stat:nth-child(1),
+    .hero-stat:nth-child(2){
+        border-bottom:1px solid #222;
+    }
+
+    .dashboard{
+        grid-template-columns:1fr;
+    }
+
+    .device-score{
+        text-align:left;
+    }
+
+    .tests{
+        grid-template-columns:1fr;
+    }
+
+    .info-panel{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:600px){
+
+    header{
+        padding:0 5%;
+    }
+
+    .discord-link{
+        padding:9px 10px;
+        font-size:8px;
+    }
+
+    .hero{
+        padding:120px 6% 70px;
+    }
+
+    .hero h1{
+        letter-spacing:-4px;
+    }
+
+    section{
+        padding:80px 6%;
+    }
+
+    .register{
+        padding:30px 20px;
+    }
+
+    footer{
+        flex-direction:column;
+        gap:10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header>
+
+    <div class="logo">
+        DEVICE<span>LAB</span>
+    </div>
+
+    <div class="header-right">
+
+        <div class="header-status">
+            <span class="status-dot"></span>
+            SYSTEM ONLINE
+        </div>
+
+        <a
+            class="discord-link"
+            href="https://discord.gg/ggW49vWJU"
+            target="_blank"
+        >
+            MY DISCORD SERVER →
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-grid"></div>
+
+    <div class="hero-content">
+
+        <div class="label">
+            DEVICE PERFORMANCE LAB / 2026
+        </div>
+
+        <h1>
+            TEST.<br>
+            <span>YOUR</span><br>
+            DEVICE.
+        </h1>
+
+        <p class="hero-description">
+            Профессиональная диагностика устройства прямо
+            в браузере. Производительность, экран, сеть,
+            память, звук, камера, микрофон и системная информация.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a
+                href="#registration"
+                class="button primary"
+            >
+                START DIAGNOSTICS →
+            </a>
+
+            <a
+                href="#tests"
+                class="button secondary"
+                onclick="return checkAccess()"
+            >
+                VIEW TESTS
+            </a>
+
+        </div>
+
+        <div class="hero-stats">
+
+            <div class="hero-stat">
+                <strong>FPS</strong>
+                <small>PERFORMANCE</small>
+            </div>
+
+            <div class="hero-stat">
+                <strong>Hz</strong>
+                <small>DISPLAY</small>
+            </div>
+
+            <div class="hero-stat">
+                <strong>NET</strong>
+                <small>CONNECTION</small>
+            </div>
+
+            <div class="hero-stat">
+                <strong>A/V</strong>
+                <small>AUDIO & VIDEO</small>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- REGISTRATION -->
+
+<section
+    class="registration-section"
+    id="registration"
+>
+
+    <div class="register">
+
+        <div class="section-label">
+            ACCESS REQUIRED
+        </div>
+
+        <h2>
+            CREATE PROFILE
+        </h2>
+
+        <p class="register-description">
+            Создай профиль перед началом диагностики.
+            После регистрации тебе откроется полный DEVICE LAB.
+        </p>
+
+        <input
+            id="username"
+            class="input"
+            placeholder="Username"
+            autocomplete="username"
+        >
+
+        <input
+            id="email"
+            class="input"
+            type="email"
+            placeholder="Gmail"
+            autocomplete="email"
+        >
+
+        <input
+            id="age"
+            class="input"
+            type="number"
+            placeholder="Age"
+            min="1"
+            max="120"
+        >
+
+        <button
+            class="start"
+            onclick="registerUser()"
+        >
+            CREATE PROFILE & CONTINUE →
+        </button>
+
+        <div class="privacy-note">
+            Профиль сохраняется локально в браузере.
+            Данные не отправляются на сервер этой демо-версией.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- LAB -->
+
+<section id="lab">
+
+    <div class="section-label">
+        DEVICE LAB / DASHBOARD
+    </div>
+
+    <h2 class="section-title">
+        DEVICE<br>
+        ANALYSIS.
+    </h2>
+
+
+    <!-- DASHBOARD -->
+
+    <div class="dashboard">
+
+        <div class="dashboard-card">
+
+            <h3>
+                CURRENT USER
+            </h3>
+
+            <div
+                class="user-name"
+                id="profileName"
+            >
+                —
+            </div>
+
+            <div
+                class="user-meta"
+                id="profileMeta"
+            >
+                —
+            </div>
+
+        </div>
+
+        <div class="dashboard-card device-score">
+
+            <h3>
+                LAB STATUS
+            </h3>
+
+            <strong id="score">
+                READY
+            </strong>
+
+            <span>
+                DIAGNOSTIC SYSTEM
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- TESTS -->
+
+    <div
+        class="tests"
+        id="tests"
+    >
+
+
+        <!-- SCREEN -->
+
+        <div class="test-card">
+
+            <div class="test-number">01 / DISPLAY</div>
+            <div class="test-icon">◈</div>
+
+            <h3>Screen</h3>
+
+            <p>
+                Разрешение, pixel ratio и основные
+                параметры дисплея.
+            </p>
+
+            <div
+                class="test-result"
+                id="screenResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="screenTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- REFRESH RATE -->
+
+        <div class="test-card">
+
+            <div class="test-number">02 / DISPLAY</div>
+            <div class="test-icon">Hz</div>
+
+            <h3>Refresh Rate</h3>
+
+            <p>
+                Оценка фактической частоты кадров
+                браузера.
+            </p>
+
+            <div
+                class="test-result"
+                id="refreshResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="refreshTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- RAM -->
+
+        <div class="test-card">
+
+            <div class="test-number">03 / MEMORY</div>
+            <div class="test-icon">▣</div>
+
+            <h3>Memory</h3>
+
+            <p>
+                Информация об оперативной памяти,
+                доступной браузеру.
+            </p>
+
+            <div
+                class="test-result"
+                id="ramResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="ramTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- CPU -->
+
+        <div class="test-card">
+
+            <div class="test-number">04 / CPU</div>
+            <div class="test-icon">⌁</div>
+
+            <h3>Processor</h3>
+
+            <p>
+                Количество логических процессоров
+                устройства.
+            </p>
+
+            <div
+                class="test-result"
+                id="cpuResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="cpuTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- FPS -->
+
+        <div class="test-card">
+
+            <div class="test-number">05 / PERFORMANCE</div>
+            <div class="test-icon">FPS</div>
+
+            <h3>Browser FPS</h3>
+
+            <p>
+                Измерение производительности
+                графического цикла браузера.
+            </p>
+
+            <div
+                class="test-result"
+                id="fpsResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="fpsTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- GPU -->
+
+        <div class="test-card">
+
+            <div class="test-number">06 / GRAPHICS</div>
+            <div class="test-icon">GPU</div>
+
+            <h3>Graphics</h3>
+
+            <p>
+                Определение WebGL renderer и
+                графического устройства.
+            </p>
+
+            <div
+                class="test-result"
+                id="gpuResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="gpuTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- INTERNET -->
+
+        <div class="test-card">
+
+            <div class="test-number">07 / NETWORK</div>
+            <div class="test-icon">↗</div>
+
+            <h3>Internet</h3>
+
+            <p>
+                Приблизительная скорость загрузки
+                интернет-соединения.
+            </p>
+
+            <div
+                class="test-result"
+                id="netResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="internetTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- NETWORK INFO -->
+
+        <div class="test-card">
+
+            <div class="test-number">08 / NETWORK</div>
+            <div class="test-icon">NET</div>
+
+            <h3>Connection</h3>
+
+            <p>
+                Тип соединения и доступная информация
+                Network API.
+            </p>
+
+            <div
+                class="test-result"
+                id="connectionResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="connectionTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- KEYBOARD -->
+
+        <div class="test-card">
+
+            <div class="test-number">09 / INPUT</div>
+            <div class="test-icon">⌨</div>
+
+            <h3>Typing Speed</h3>
+
+            <p>
+                Измерение скорости печати пользователя.
+            </p>
+
+            <input
+                id="typingInput"
+                class="input"
+                placeholder="Start typing..."
+            >
+
+            <div
+                class="test-result"
+                id="typingResult"
+            >
+                0 CPM
+            </div>
+
+        </div>
+
+
+        <!-- MOUSE -->
+
+        <div class="test-card">
+
+            <div class="test-number">10 / INPUT</div>
+            <div class="test-icon">+</div>
+
+            <h3>Mouse</h3>
+
+            <p>
+                Оценка частоты событий движения мыши.
+            </p>
+
+            <div
+                class="test-result"
+                id="mouseResult"
+            >
+                MOVE YOUR MOUSE
+            </div>
+
+        </div>
+
+
+        <!-- MICROPHONE -->
+
+        <div class="test-card">
+
+            <div class="test-number">11 / AUDIO</div>
+            <div class="test-icon">MIC</div>
+
+            <h3>Microphone</h3>
+
+            <p>
+                Проверка микрофона и уровня
+                входного аудиосигнала.
+            </p>
+
+            <div class="audio-bars" id="audioBars">
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+            </div>
+
+            <div
+                class="test-result"
+                id="micResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="micTest()"
+            >
+                TEST MIC
+            </button>
+
+        </div>
+
+
+        <!-- SPEAKERS -->
+
+        <div class="test-card">
+
+            <div class="test-number">12 / AUDIO</div>
+            <div class="test-icon">♪</div>
+
+            <h3>Speakers</h3>
+
+            <p>
+                Воспроизведение тестового сигнала
+                для проверки звука.
+            </p>
+
+            <div
+                class="test-result"
+                id="speakerResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="speakerTest()"
+            >
+                PLAY TEST SOUND
+            </button>
+
+        </div>
+
+
+        <!-- CAMERA -->
+
+        <div class="test-card">
+
+            <div class="test-number">13 / CAMERA</div>
+            <div class="test-icon">CAM</div>
+
+            <h3>Camera</h3>
+
+            <p>
+                Проверка доступности камеры устройства
+                через браузер.
+            </p>
+
+            <div
+                class="test-result"
+                id="cameraResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="cameraTest()"
+            >
+                TEST CAMERA
+            </button>
+
+        </div>
+
+
+        <!-- BATTERY -->
+
+        <div class="test-card">
+
+            <div class="test-number">14 / POWER</div>
+            <div class="test-icon">▰</div>
+
+            <h3>Battery</h3>
+
+            <p>
+                Заряд и состояние батареи,
+                если браузер предоставляет API.
+            </p>
+
+            <div
+                class="test-result"
+                id="batteryResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="batteryTest()"
+            >
+                RUN TEST
+            </button>
+
+        </div>
+
+
+        <!-- DEVICE -->
+
+        <div class="test-card">
+
+            <div class="test-number">15 / SYSTEM</div>
+            <div class="test-icon">SYS</div>
+
+            <h3>Device Info</h3>
+
+            <p>
+                ОС, браузер и техническая информация
+                устройства.
+            </p>
+
+            <div
+                class="test-result"
+                id="deviceResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="deviceTest()"
+            >
+                SHOW INFO
+            </button>
+
+        </div>
+
+
+        <!-- FULLSCREEN -->
+
+        <div class="test-card">
+
+            <div class="test-number">16 / DISPLAY</div>
+            <div class="test-icon">□</div>
+
+            <h3>Fullscreen</h3>
+
+            <p>
+                Проверка поддержки полноэкранного
+                режима браузером.
+            </p>
+
+            <div
+                class="test-result"
+                id="fullscreenResult"
+            >
+                READY
+            </div>
+
+            <button
+                class="test-button"
+                onclick="fullscreenTest()"
+            >
+                TEST
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SYSTEM INFORMATION -->
+
+    <div class="benchmark">
+
+        <div class="section-label">
+            SYSTEM DIAGNOSTICS
+        </div>
+
+        <h3>
+            DEVICE INFORMATION
+        </h3>
+
+        <p>
+            Сводная информация, которую браузер
+            разрешает получить без установки программы.
+        </p>
+
+        <div class="info-panel">
+
+            <div class="info-item">
+                <small>PLATFORM</small>
+                <strong id="infoPlatform">—</strong>
+            </div>
+
+            <div class="info-item">
+                <small>LANGUAGE</small>
+                <strong id="infoLanguage">—</strong>
+            </div>
+
+            <div class="info-item">
+                <small>CORES</small>
+                <strong id="infoCores">—</strong>
+            </div>
+
+            <div class="info-item">
+                <small>MEMORY</small>
+                <strong id="infoMemory">—</strong>
+            </div>
+
+            <div class="info-item">
+                <small>SCREEN</small>
+                <strong id="infoScreen">—</strong>
+            </div>
+
+            <div class="info-item">
+                <small>PIXEL RATIO</small>
+                <strong id="infoPixel">—</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- DISCORD -->
+
+<section class="discord-section">
+
+    <div class="discord-box">
+
+        <div class="section-label">
+            COMMUNITY
+        </div>
+
+        <h2>
+            DEVICE LAB
+        </h2>
+
+        <p>
+            Join the community and share your results.
+        </p>
+
+        <a
+            class="button primary"
+            href="https://discord.gg/ggW49vWJU"
+            target="_blank"
+        >
+            JOIN DISCORD →
+        </a>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <span>
+        © 2026 DEVICE LAB
+    </span>
+
+    <span>
+        BROWSER-BASED DEVICE DIAGNOSTICS
+    </span>
+
+</footer>
+
+
+<script>
+
+/* =========================
+   REGISTRATION
+========================= */
+
+function registerUser(){
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const age =
+        document.getElementById("age").value.trim();
+
+    if(!username || !email || !age){
+
+        alert("Please complete all registration fields.");
+
+        return;
+    }
+
+    if(!email.toLowerCase().endsWith("@gmail.com")){
+
+        alert("Please enter a valid Gmail address.");
+
+        return;
+    }
+
+    const profile = {
+        username,
+        email,
+        age,
+        registeredAt:new Date().toISOString()
+    };
+
+    localStorage.setItem(
+        "deviceLabUser",
+        JSON.stringify(profile)
+    );
+
+    activateLab(profile);
+
+    document
+        .getElementById("lab")
+        .scrollIntoView({
+            behavior:"smooth"
+        });
+}
+
+
+/* =========================
+   ACCESS
+========================= */
+
+function activateLab(profile){
+
+    document.getElementById("lab").style.display="block";
+
+    document.getElementById("profileName")
+        .innerText=profile.username;
+
+    document.getElementById("profileMeta")
+        .innerText=
+            profile.email +
+            "  /  AGE " +
+            profile.age;
+
+    document.getElementById("score")
+        .innerText="READY";
+
+    fillSystemInfo();
+}
+
+
+function checkAccess(){
+
+    const profile =
+        localStorage.getItem("deviceLabUser");
+
+    if(!profile){
+
+        alert(
+            "Create your profile first to access DEVICE LAB."
+        );
+
+        document
+            .getElementById("registration")
+            .scrollIntoView({
+                behavior:"smooth"
+            });
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/* =========================
+   RESTORE PROFILE
+========================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const saved =
+            localStorage.getItem("deviceLabUser");
+
+        if(saved){
+
+            try{
+
+                const profile =
+                    JSON.parse(saved);
+
+                activateLab(profile);
+
+            }catch(e){
+
+                localStorage.removeItem(
+                    "deviceLabUser"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================
+   SCREEN
+========================= */
+
+function screenTest(){
+
+    document.getElementById("screenResult")
+        .innerText =
+            screen.width +
+            " × " +
+            screen.height +
+            " / DPR " +
+            window.devicePixelRatio;
+
+}
+
+
+/* =========================
+   REFRESH RATE
+========================= */
+
+function refreshTest(){
+
+    const result =
+        document.getElementById("refreshResult");
+
+    result.innerText="MEASURING...";
+
+    let frames=0;
+
+    const start=performance.now();
+
+    function frame(){
+
+        frames++;
+
+        const elapsed =
+            performance.now()-start;
+
+        if(elapsed<3000){
+
+            requestAnimationFrame(frame);
+
+        }else{
+
+            const fps =
+                frames/(elapsed/1000);
+
+            result.innerText =
+                "~" +
+                Math.round(fps) +
+                " Hz";
+
+        }
+
+    }
+
+    requestAnimationFrame(frame);
+}
+
+
+/* =========================
+   RAM
+========================= */
+
+function ramTest(){
+
+    const ram =
+        navigator.deviceMemory;
+
+    document.getElementById("ramResult")
+        .innerText =
+            ram
+            ? ram+" GB reported"
+            : "NOT AVAILABLE";
+}
+
+
+/* =========================
+   CPU
+========================= */
+
+function cpuTest(){
+
+    document.getElementById("cpuResult")
+        .innerText =
+            navigator.hardwareConcurrency
+            ? navigator.hardwareConcurrency+
+              " logical cores"
+            : "NOT AVAILABLE";
+}
+
+
+/* =========================
+   FPS
+========================= */
+
+function fpsTest(){
+
+    const result =
+        document.getElementById("fpsResult");
+
+    result.innerText="TESTING...";
+
+    let frames=0;
+
+    const start=performance.now();
+
+    function loop(){
+
+        frames++;
+
+        const elapsed =
+            performance.now()-start;
+
+        if(elapsed<5000){
+
+            requestAnimationFrame(loop);
+
+        }else{
+
+            const fps =
+                frames/(elapsed/1000);
+
+            result.innerText =
+                Math.round(fps)+" FPS";
+
+            document.getElementById("score")
+                .innerText =
+                Math.round(fps);
+        }
+
+    }
+
+    requestAnimationFrame(loop);
+}
+
+
+/* =========================
+   GPU / WEBGL
+========================= */
+
+function gpuTest(){
+
+    const canvas =
+        document.createElement("canvas");
+
+    const gl =
+        canvas.getContext("webgl") ||
+        canvas.getContext("experimental-webgl");
+
+    if(!gl){
+
+        document.getElementById("gpuResult")
+            .innerText="WEBGL UNAVAILABLE";
+
+        return;
+    }
+
+    const debug =
+        gl.getExtension(
+            "WEBGL_debug_renderer_info"
+        );
+
+    if(debug){
+
+        const renderer =
+            gl.getParameter(
+                debug.UNMASKED_RENDERER_WEBGL
+            );
+
+        document.getElementById("gpuResult")
+            .innerText =
+                renderer.substring(0,60);
+
+    }else{
+
+        document.getElementById("gpuResult")
+            .innerText =
+                "WEBGL AVAILABLE";
+    }
+}
+
+
+/* =========================
+   INTERNET
+========================= */
+
+async function internetTest(){
+
+    const result =
+        document.getElementById("netResult");
+
+    result.innerText="TESTING...";
+
+    const url =
+        "https://upload.wikimedia.org/" +
+        "wikipedia/commons/3/3f/" +
+        "Fronalpstock_big.jpg?x="+Date.now();
+
+    const start =
+        performance.now();
+
+    try{
+
+        const response =
+            await fetch(
+                url,
+                {
+                    cache:"no-store"
+                }
+            );
+
+        const blob =
+            await response.blob();
+
+        const time =
+            performance.now()-start;
+
+        const bits =
+            blob.size*8;
+
+        const mbps =
+            bits/time/1000;
+
+        result.innerText =
+            mbps.toFixed(1)+" Mbps";
+
+    }catch(e){
+
+        result.innerText="TEST FAILED";
+
+    }
+}
+
+
+/* =========================
+   CONNECTION
+========================= */
+
+function connectionTest(){
+
+    const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+
+    if(!connection){
+
+        document.getElementById(
+            "connectionResult"
+        ).innerText =
+            "API NOT AVAILABLE";
+
+        return;
+    }
+
+    document.getElementById(
+        "connectionResult"
+    ).innerText =
+        (
+            connection.effectiveType ||
+            "unknown"
+        ).toUpperCase() +
+        " / " +
+        (
+            connection.downlink ||
+            "?"
+        ) +
+        " Mbps";
+}
+
+
+/* =========================
+   TYPING
+========================= */
+
+let typingStart=null;
+
+document
+    .getElementById("typingInput")
+    .addEventListener(
+        "input",
+        function(){
+
+            if(!typingStart){
+
+                typingStart=Date.now();
+
+            }
+
+            const seconds =
+                (Date.now()-typingStart)/1000;
+
+            if(seconds<1)
+                return;
+
+            const chars =
+                this.value.length;
+
+            const cpm =
+                Math.round(
+                    chars/seconds*60
+                );
+
+            const wpm =
+                Math.round(
+                    chars/5/seconds*60
+                );
+
+            document.getElementById(
+                "typingResult"
+            ).innerText =
+                cpm+
+                " CPM / "+
+                wpm+
+                " WPM";
+
+        }
+    );
+
+
+/* =========================
+   MOUSE
+========================= */
+
+let mouseEvents=0;
+
+let mouseStart=performance.now();
+
+document.addEventListener(
+    "mousemove",
+    function(){
+
+        mouseEvents++;
+
+        const elapsed =
+            performance.now()-mouseStart;
+
+        if(elapsed>=1000){
+
+            const rate =
+                mouseEvents/
+                (elapsed/1000);
+
+            document.getElementById(
+                "mouseResult"
+            ).innerText =
+                "~"+
+                Math.round(rate)+
+                " EVENTS/S";
+
+            mouseEvents=0;
+
+            mouseStart=performance.now();
+        }
+
+    }
+);
+
+
+/* =========================
+   MICROPHONE
+========================= */
+
+let micStream=null;
+let micAnimation=null;
+
+async function micTest(){
+
+    const result =
+        document.getElementById("micResult");
+
+    try{
+
+        micStream =
+            await navigator.mediaDevices.getUserMedia({
+                audio:true
+            });
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        const audioContext =
+            new AudioContext();
+
+        const source =
+            audioContext.createMediaStreamSource(
+                micStream
+            );
+
+        const analyser =
+            audioContext.createAnalyser();
+
+        analyser.fftSize=256;
+
+        source.connect(analyser);
+
+        const data =
+            new Uint8Array(
+                analyser.frequencyBinCount
+            );
+
+        const bars =
+            document.querySelectorAll(
+                ".audio-bar"
+            );
+
+        function update(){
+
+            analyser.getByteFrequencyData(data);
+
+            let total=0;
+
+            for(let i=0;i<data.length;i++){
+
+                total+=data[i];
+
+            }
+
+            const level =
+                total/data.length;
+
+            bars.forEach(
+                function(bar,index){
+
+                    const value =
+                        Math.max(
+                            5,
+                            Math.min(
+                                35,
+                                level*
+                                (0.4+
+                                Math.random())
+                            )
+                        );
+
+                    bar.style.height=
+                        value+"px";
+                }
+            );
+
+            result.innerText =
+                "MIC ACTIVE / LEVEL "+
+                Math.round(level);
+
+            micAnimation =
+                requestAnimationFrame(update);
+        }
+
+        update();
+
+    }catch(e){
+
+        result.innerText =
+            "MIC ACCESS DENIED";
+
+    }
+
+}
+
+
+/* =========================
+   SPEAKER
+========================= */
+
+function speakerTest(){
+
+    const result =
+        document.getElementById(
+            "speakerResult"
+        );
+
+    try{
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        const context =
+            new AudioContext();
+
+        const oscillator =
+            context.createOscillator();
+
+        const gain =
+            context.createGain();
+
+        oscillator.frequency.value=440;
+
+        gain.gain.value=.08;
+
+        oscillator.connect(gain);
+
+        gain.connect(context.destination);
+
+        oscillator.start();
+
+        setTimeout(
+            function(){
+
+                oscillator.stop();
+
+                result.innerText=
+                    "AUDIO PLAYBACK OK";
+
+            },
+            1000
+        );
+
+    }catch(e){
+
+        result.innerText=
+            "AUDIO TEST FAILED";
+    }
+}
+
+
+/* =========================
+   CAMERA
+========================= */
+
+async function cameraTest(){
+
+    const result =
+        document.getElementById(
+            "cameraResult"
+        );
+
+    try{
+
+        const stream =
+            await navigator.mediaDevices
+                .getUserMedia({
+                    video:true
+                });
+
+        const tracks =
+            stream.getVideoTracks();
+
+        const label =
+            tracks[0]
+                ? tracks[0].label
+                : "CAMERA DETECTED";
+
+        result.innerText =
+            label.substring(0,40);
+
+        tracks.forEach(
+            track=>track.stop()
+        );
+
+    }catch(e){
+
+        result.innerText =
+            "CAMERA UNAVAILABLE";
+
+    }
+}
+
+
+/* =========================
+   BATTERY
+========================= */
+
+async function batteryTest(){
+
+    const result =
+        document.getElementById(
+            "batteryResult"
+        );
+
+    if(!navigator.getBattery){
+
+        result.innerText=
+            "API NOT AVAILABLE";
+
+        return;
+    }
+
+    try{
+
+        const battery =
+            await navigator.getBattery();
+
+        result.innerText =
+            Math.round(
+                battery.level*100
+            )+
+            "% / "+
+            (
+                battery.charging
+                ? "CHARGING"
+                : "ON BATTERY"
+            );
+
+    }catch(e){
+
+        result.innerText=
+            "UNAVAILABLE";
+    }
+}
+
+
+/* =========================
+   DEVICE
+========================= */
+
+function deviceTest(){
+
+    const ua =
+        navigator.userAgent;
+
+    let browser="Unknown";
+
+    if(ua.includes("Chrome"))
+        browser="Chrome";
+
+    if(ua.includes("Firefox"))
+        browser="Firefox";
+
+    if(ua.includes("Edg"))
+        browser="Edge";
+
+    if(ua.includes("Safari") &&
+       !ua.includes("Chrome"))
+        browser="Safari";
+
+    document.getElementById(
+        "deviceResult"
+    ).innerText =
+        browser+
+        " / "+
+        navigator.platform;
+}
+
+
+/* =========================
+   FULLSCREEN
+========================= */
+
+function fullscreenTest(){
+
+    const result =
+        document.getElementById(
+            "fullscreenResult"
+        );
+
+    if(!document.fullscreenEnabled){
+
+        result.innerText=
+            "NOT SUPPORTED";
+
+        return;
+    }
+
+    document.documentElement
+        .requestFullscreen()
+        .then(
+            function(){
+
+                result.innerText=
+                    "FULLSCREEN ACTIVE";
+
+            }
+        )
+        .catch(
+            function(){
+
+                result.innerText=
+                    "BLOCKED BY BROWSER";
+
+            }
+        );
+}
+
+
+/* =========================
+   SYSTEM INFO
+========================= */
+
+function fillSystemInfo(){
+
+    document.getElementById(
+        "infoPlatform"
+    ).innerText =
+        navigator.platform || "Unknown";
+
+    document.getElementById(
+        "infoLanguage"
+    ).innerText =
+        navigator.language || "Unknown";
+
+    document.getElementById(
+        "infoCores"
+    ).innerText =
+        navigator.hardwareConcurrency
+        ? navigator.hardwareConcurrency
+        : "Unknown";
+
+    document.getElementById(
+        "infoMemory"
+    ).innerText =
+        navigator.deviceMemory
+        ? navigator.deviceMemory+" GB"
+        : "Restricted";
+
+    document.getElementById(
+        "infoScreen"
+    ).innerText =
+        screen.width+
+        " × "+
+        screen.height;
+
+    document.getElementById(
+        "infoPixel"
+    ).innerText =
+        window.devicePixelRatio;
+}
+
+</script>
+
+</body>
+</html>
